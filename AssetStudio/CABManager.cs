@@ -29,6 +29,7 @@ namespace AssetStudio
                     files.Remove(unityBuiltinExtra);
                 }
 
+                int collisions = 0;
                 Progress.Reset();
                 for (int i = 0; i < files.Count; i++)
                 {
@@ -44,6 +45,11 @@ namespace AssetStudio
                                 {
                                     if (cabReader.FileType == FileType.AssetsFile)
                                     {
+                                        if (WMVMap.ContainsKey(cab.path))
+                                        {
+                                            collisions++;
+                                            continue;
+                                        }
                                         var assetsFile = new SerializedFile(cabReader, null);
                                         var dependancies = assetsFile.m_Externals.Select(x => x.fileName).ToList();
                                         WMVMap.Add(cab.path, new WMVEntry(file, bundle.Key, dependancies));
@@ -76,7 +82,7 @@ namespace AssetStudio
                         }
                     }
                 }
-                Logger.Info($"WMVMap build successfully !!");
+                Logger.Info($"WMVMap build successfully, {collisions + 1} Collisions Found");
             }
             catch (Exception e)
             {
